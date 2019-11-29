@@ -8,6 +8,7 @@ def main():
     c.add_entry('manzana', 'mela')
     print(c.search_entries())
     print(c.search_entries('manana', 0.6))
+    print(c.get_entries_sorted(controller.WORD, True))
 
 
 if __name__ == '__main__':

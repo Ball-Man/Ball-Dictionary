@@ -126,3 +126,15 @@ class Controller:
         entries = map(lambda x: x[1], sorted_ratios)
 
         return tuple(entries)
+
+    def get_entries_sorted(self, target, reverse=False):
+        """Get a tuple containing all the entries, sorted.
+
+        target defines which word from the pair(w, t) should be used for
+        sorting. target can be WORD or TRANS (constants: 0, 1).
+
+        The default order is alphabetical. Reverse simply reverts the
+        alphabetical order.
+        """
+        return tuple(sorted(self._dictionary, key=lambda x: x[target],
+                            reverse=reverse))
