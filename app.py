@@ -19,6 +19,7 @@ DICTIONARY_PATH = 'dict/dictionary.json'
 # Default search threshold
 SEARCH_THRESHOLD = 0.6
 
+
 def _abspath(path):
     """Compute an absolute path.
 
@@ -38,10 +39,6 @@ class App:
 
     def __init__(self):
         """Create a new app window."""
-
-        # Create a new logical controller
-        self._controller = controller.Controller(_abspath(DICTIONARY_PATH))
-
         # Setup window
         self._window = Tk()
         self._window.geometry("%dx%d" % (500, 600))
@@ -103,6 +100,15 @@ class App:
 
         # Event bindings
         self._btn_search.bind('<Button-1>', self._btn_search_click)
+        self._entry_search.bind('<Return>', self._btn_search_click)
+
+        # Create a new logical controller
+        self._controller = None
+        try:
+            self._controller = controller.Controller(_abspath(DICTIONARY_PATH))
+        except Exception as e:
+            messagebox.showerror('Error loading dictionary :(', str(e))
+            self._window.destroy()
 
     def start(self):
         """Start the application's main loop."""
@@ -123,7 +129,6 @@ class App:
         """Event for the search button."""
         # Clear listbox
         self._lst_search.delete(0, END)
-        print(self._entry_search.get())
 
         result = self._controller.search_entries(
             keyword=self._entry_search.get(), threshold=SEARCH_THRESHOLD)
