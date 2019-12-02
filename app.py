@@ -16,6 +16,9 @@ CONFIG_TRANS_LANG_KEY = 'trans_lang'
 # Dictionary default path(json file, relative to this file)
 DICTIONARY_PATH = 'dict/dictionary.json'
 
+# Icon default path(relative to this file)
+ICON_PATH = 'icon.ico'
+
 # Default search threshold
 SEARCH_THRESHOLD = 0.6
 
@@ -52,7 +55,7 @@ class App:
         self._window = Tk()
         self._window.geometry("%dx%d" % (500, 600))
         self._window.title('Dictionary')
-        # self._window.overrideredirect(True)
+        self._window.iconbitmap(_abspath(ICON_PATH))
 
         # Setup window notebook
         self._notebook = Notebook(self._window)
