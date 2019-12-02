@@ -19,6 +19,10 @@ DICTIONARY_PATH = 'dict/dictionary.json'
 # Icon default path(relative to this file)
 ICON_PATH = 'icon.ico'
 
+# Window properties
+WIN_TITLE = 'Dictionary'
+WIN_GEOMETRY = '500x600'
+
 # Default search threshold
 SEARCH_THRESHOLD = 0.6
 
@@ -53,8 +57,8 @@ class App:
 
         # Setup window
         self._window = Tk()
-        self._window.geometry("%dx%d" % (500, 600))
-        self._window.title('Dictionary')
+        self._window.geometry(WIN_GEOMETRY)
+        self._window.title(WIN_TITLE)
         self._window.iconbitmap(_abspath(ICON_PATH))
 
         # Setup window notebook
