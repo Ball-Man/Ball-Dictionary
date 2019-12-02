@@ -98,9 +98,18 @@ class App:
         self._entry_trans = Entry(frame_lang2)
         self._entry_trans.pack(side=LEFT, anchor=N)
 
+        self._btn_insert = Button(self._tab_insert, text='Add')
+        self._btn_insert.pack(anchor=W, pady=(5, 0))
+
         # Event bindings
         self._btn_search.bind('<Button-1>', self._btn_search_click)
         self._entry_search.bind('<Return>', self._btn_search_click)
+        self._btn_search.bind('<Return>', self._btn_search_click)
+
+        self._btn_insert.bind('<Button-1>', self._btn_insert_click)
+        self._entry_trans.bind('<Return>', self._btn_insert_click)
+        self._entry_word.bind('<Return>', self._btn_insert_click)
+        self._btn_insert.bind('<Return>', self._btn_insert_click)
 
         # Create a new logical controller
         self._controller = None
@@ -123,7 +132,7 @@ class App:
             with open(_abspath(CONFIG_FILE)) as file:
                 self._config_dict = json.load(file)
         else:
-            print(f'Config file not found: {CONFIG_FILE}')
+            print(f'Config file not found: {CONFIG_FILE}.')
 
     def _btn_search_click(self, event):
         """Event for the search button."""
@@ -136,3 +145,29 @@ class App:
         for entry in result:
             self._lst_search.insert(END, f'{entry[controller.WORD]}: '
                                     + f'{entry[controller.TRANS]}')
+
+    def _btn_insert_click(self, event):
+        """Event for the insert button."""
+        w = self._entry_word.get()
+        t = self._entry_trans.get()
+
+        # Focus on the first textbox for fast insertion
+        self._entry_word.focus()
+        self._entry_word.selection_range(0, END)
+
+        # Clean textboxes
+        self._entry_word.delete(0, END)
+        self._entry_trans.delete(0, END)
+
+        if not w or w.isspace() or not t or t.isspace():
+            messagebox.showerror('Oops', 'Empty words are not allowed.')
+            return
+
+        ok = self._controller.add_entry(w, t)
+
+        if not ok:
+            messagebox.showerror('Oops', 'This word was already in your '
+                                + 'dictionary.')
+            return
+
+        self._controller.save()
