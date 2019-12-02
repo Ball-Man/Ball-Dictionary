@@ -9,10 +9,15 @@ import controller
 
 
 # Configuration default file path(relative to this file)
-config_file = 'config.json'
+CONFIG_FILE = 'config.json'
 CONFIG_WORD_LANG_KEY = 'word_lang'
 CONFIG_TRANS_LANG_KEY = 'trans_lang'
 
+# Dictionary default path(json file, relative to this file)
+DICTIONARY_PATH = 'dict/dictionary.json'
+
+# Default search threshold
+SEARCH_THRESHOLD = 0.6
 
 def _abspath(path):
     """Compute an absolute path.
@@ -33,9 +38,12 @@ class App:
 
     def __init__(self):
         """Create a new app window."""
-        self._window = Tk()
+
+        # Create a new logical controller
+        self._controller = controller.Controller(_abspath(DICTIONARY_PATH))
 
         # Setup window
+        self._window = Tk()
         self._window.geometry("%dx%d" % (500, 600))
         self._window.title('Dictionary')
         # self._window.overrideredirect(True)
@@ -72,7 +80,8 @@ class App:
         self._entry_search.pack(side=LEFT)
         self._btn_search.pack(side=LEFT, padx=(10, 0))
 
-        self._lst_search = Listbox(self._tab_search)
+        self._lst_search = Listbox(self._tab_search, borderwidth=0,
+                                   highlightthickness=0)
         self._lst_search.pack(fill=BOTH, expand=True)
 
         # Setup insert frame
@@ -92,6 +101,9 @@ class App:
         self._entry_trans = Entry(frame_lang2)
         self._entry_trans.pack(side=LEFT, anchor=N)
 
+        # Event bindings
+        self._btn_search.bind('<Button-1>', self._btn_search_click)
+
     def start(self):
         """Start the application's main loop."""
         self._window.mainloop()
@@ -101,6 +113,20 @@ class App:
         """Load config from a default json file."""
         self._config_dict = {}
 
-        if op.isfile(_abspath(config_file)):
-            with open(_abspath(config_file)) as file:
+        if op.isfile(_abspath(CONFIG_FILE)):
+            with open(_abspath(CONFIG_FILE)) as file:
                 self._config_dict = json.load(file)
+        else:
+            print(f'Config file not found: {CONFIG_FILE}')
+
+    def _btn_search_click(self, event):
+        """Event for the search button."""
+        # Clear listbox
+        self._lst_search.delete(0, END)
+        print(self._entry_search.get())
+
+        result = self._controller.search_entries(
+            keyword=self._entry_search.get(), threshold=SEARCH_THRESHOLD)
+
+        for w, t in result:
+            self._lst_search.insert(END, f'{w}: {t}')
