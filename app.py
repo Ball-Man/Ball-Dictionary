@@ -39,12 +39,6 @@ class App:
 
     def __init__(self):
         """Create a new app window."""
-        # Setup window
-        self._window = Tk()
-        self._window.geometry("%dx%d" % (500, 600))
-        self._window.title('Dictionary')
-        # self._window.overrideredirect(True)
-
         # Load configuration
         self._config_dict = None
         self._load_config()
@@ -53,6 +47,12 @@ class App:
                                       CONFIG_WORD_LANG_KEY)
         lang2 = self._config_dict.get(CONFIG_TRANS_LANG_KEY,
                                       CONFIG_TRANS_LANG_KEY)
+
+        # Setup window
+        self._window = Tk()
+        self._window.geometry("%dx%d" % (500, 600))
+        self._window.title('Dictionary')
+        # self._window.overrideredirect(True)
 
         # Setup window notebook
         self._notebook = Notebook(self._window)
