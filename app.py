@@ -11,7 +11,7 @@ import controller
 # Configuration default file path(relative to this file)
 config_file = 'config.json'
 CONFIG_WORD_LANG_KEY = 'word_lang'
-CONFIG_TRANS_LANG_KEY = 'word_trans'
+CONFIG_TRANS_LANG_KEY = 'trans_lang'
 
 
 def _abspath(path):
@@ -60,6 +60,21 @@ class App:
         self._notebook.add(self._tab_search, text='search')
         self._notebook.add(self._tab_insert, text='insert')
 
+        # Setup search frame
+        frame_search = Labelframe(self._tab_search, text='Search', padding=5)
+        frame_search.pack(fill=X)
+
+        self._entry_search = Entry(frame_search)
+        lbl_keyword = Label(frame_search, text='keyword: ')
+        self._btn_search = Button(frame_search, text='Search')
+
+        lbl_keyword.pack(side=LEFT)
+        self._entry_search.pack(side=LEFT)
+        self._btn_search.pack(side=LEFT, padx=(10, 0))
+
+        self._lst_search = Listbox(self._tab_search)
+        self._lst_search.pack(fill=BOTH, expand=True)
+
         # Setup insert frame
         frame_lang1 = Frame(self._tab_insert)
         frame_lang1.pack(fill=X, pady=(0, 5))
@@ -72,7 +87,7 @@ class App:
         frame_lang2 = Frame(self._tab_insert)
         frame_lang2.pack(fill=X)
 
-        lbl_lang_2 = Label(frame_lang2, text=f'{lang1}: ')
+        lbl_lang_2 = Label(frame_lang2, text=f'{lang2}: ')
         lbl_lang_2.pack(side=LEFT)
         self._entry_trans = Entry(frame_lang2)
         self._entry_trans.pack(side=LEFT, anchor=N)
