@@ -6,8 +6,8 @@ from difflib import SequenceMatcher
 
 
 # Constants
-WORD = 0
-TRANS = 1
+WORD = 'w'
+TRANS = 't'
 
 
 def _similar(a, b):
@@ -71,23 +71,22 @@ class Controller:
 
         word is the new word you want to remember, trans is the
         translation in your main language.
+
+        Returns True if the operation succeded, False if the word was
+        already present inside the dict(no action is taken in this
+        case).
         """
-        self._dictionary.append([word, trans])
+        found = any(word == dic[WORD] for dic in self._dictionary)
+        if not found:
+            self._dictionary.append({WORD: word, TRANS: trans})
+
+        return not found
 
     def remove_entry(self, word):
         """Remove the word entry from the dictionary."""
-        i = 0
-        remove_ind = i
-        # Find the given word in the dictionary
-        for w, t in self._dictionary:
-            if w == word:
-                remove_ind = i
-
-            i += 1
-
-        # If the word was found, remove its entry
-        if remove_ind < len(self._dictionary):
-            del self._dictionary[remove_ind]
+        removed = [entry for entry in self._dictionary if entry[WORD] == word]
+        self._dictionary = [entry for entry in self._dictionary
+                            if entry not in removed]
 
     def search_entries(self, keyword=None, threshold=0):
         """Search entries.

@@ -133,5 +133,6 @@ class App:
         result = self._controller.search_entries(
             keyword=self._entry_search.get(), threshold=SEARCH_THRESHOLD)
 
-        for w, t in result:
-            self._lst_search.insert(END, f'{w}: {t}')
+        for entry in result:
+            self._lst_search.insert(END, f'{entry[controller.WORD]}: '
+                                    + f'{entry[controller.TRANS]}')
