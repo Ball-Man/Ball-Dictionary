@@ -12,6 +12,7 @@ import controller
 CONFIG_FILE = 'config.json'
 CONFIG_WORD_LANG_KEY = 'word_lang'
 CONFIG_TRANS_LANG_KEY = 'trans_lang'
+CONFIG_LOCALE_KEY = 'locale'
 
 # Dictionary default path(json file, relative to this file)
 DICTIONARY_PATH = 'dict/dictionary.json'
@@ -79,10 +80,12 @@ class App:
         self._entry_search = Entry(frame_search)
         lbl_keyword = Label(frame_search, text='keyword: ')
         self._btn_search = Button(frame_search, text='Search')
+        self._btn_showall = Button(frame_search, text='Show all')
 
         lbl_keyword.pack(side=LEFT)
         self._entry_search.pack(side=LEFT)
         self._btn_search.pack(side=LEFT, padx=(10, 0))
+        self._btn_showall.pack(side=LEFT, padx=(10, 0))
 
         # Setup listbox with scrollbar
         frame_scrollbar = Frame(self._tab_search)
@@ -118,19 +121,23 @@ class App:
         self._btn_insert.pack(anchor=W, pady=(5, 0))
 
         # Event bindings
-        self._btn_search.bind('<Button-1>', self._btn_search_click)
-        self._entry_search.bind('<Return>', self._btn_search_click)
-        self._btn_search.bind('<Return>', self._btn_search_click)
+        self._btn_search.bind('<Button-1>', self._search)
+        self._entry_search.bind('<Return>', self._search)
+        self._btn_search.bind('<Return>', self._search)
 
-        self._btn_insert.bind('<Button-1>', self._btn_insert_click)
-        self._entry_trans.bind('<Return>', self._btn_insert_click)
-        self._entry_word.bind('<Return>', self._btn_insert_click)
-        self._btn_insert.bind('<Return>', self._btn_insert_click)
+        self._btn_showall.bind('<Button-1>', self._showall)
+
+        self._btn_insert.bind('<Button-1>', self._insert)
+        self._entry_trans.bind('<Return>', self._insert)
+        self._entry_word.bind('<Return>', self._insert)
+        self._btn_insert.bind('<Return>', self._insert)
 
         # Create a new logical controller
         self._controller = None
         try:
-            self._controller = controller.Controller(_abspath(DICTIONARY_PATH))
+            self._controller = controller.Controller(
+                _abspath(DICTIONARY_PATH),
+                self._config_dict[CONFIG_LOCALE_KEY])
         except Exception as e:
             messagebox.showerror('Error loading dictionary :(', str(e))
             self._window.destroy()
@@ -150,19 +157,22 @@ class App:
         else:
             print(f'Config file not found: {CONFIG_FILE}.')
 
-    def _btn_search_click(self, event):
+    def _search(self, event=None):
         """Event for the search button."""
-        # Clear listbox
-        self._lst_search.delete(0, END)
-
         result = self._controller.search_entries(
             keyword=self._entry_search.get(), threshold=SEARCH_THRESHOLD)
+        self._show_entries(result)
 
-        for entry in result:
+    def _show_entries(self, entries):
+        """Updates the listbox with the given list of entries."""
+        # Clear the listbox
+        self._lst_search.delete(0, END)
+
+        for entry in entries:
             self._lst_search.insert(END, f'{entry[controller.WORD]}: '
                                     + f'{entry[controller.TRANS]}')
 
-    def _btn_insert_click(self, event):
+    def _insert(self, event=None):
         """Event for the insert button."""
         w = self._entry_word.get()
         t = self._entry_trans.get()
@@ -187,3 +197,8 @@ class App:
             return
 
         self._controller.save()
+
+    def _showall(self, event=None):
+        """Event for the showall button."""
+        result = self._controller.get_entries_sorted(controller.WORD)
+        self._show_entries(result)

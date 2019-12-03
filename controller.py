@@ -3,7 +3,8 @@ import os
 import os.path as op
 import json
 from difflib import SequenceMatcher
-
+import locale
+import functools
 
 # Constants
 WORD = 'w'
@@ -22,17 +23,21 @@ class Controller:
     to/from the dictionary.
     """
 
-    def __init__(self, dict_path):
+    def __init__(self, dict_path, locale_code):
         """Create a new controller, based on a dictionary path.
 
         If the said path doesn't exist, an empty dictionary will be
         created.
+        locale_code is used for alphabetical order(special characters
+        from different countries).
         """
         self._dictionary_path = None
         # It's called dictionary but in reality it's a list
         self._dictionary = None
 
         self.load(dict_path)
+
+        locale.setlocale(locale.LC_ALL, locale_code)
 
     def load(self, path):
         """Load a dictionary from a path, if exists.
@@ -92,14 +97,13 @@ class Controller:
         """Search entries.
 
         keyword will be used as search parameter. If the similarity
-        between keyword and w or t(from the entry pair (w, t)) is
+        between keyword and w or t(from the entry key's "w" and "t") is
         greater than the given threshold, the selected pair will be
         added to the output.
 
-        Return a list of pairs (w, t) matching the research. If keyword
-        is None return all the entries.
-        The entries are sorted so that the higher similarities come
-        first.
+        Return a list of dicts matching the research. If keyword is None
+        return all the entries. The entries are sorted so that the
+        higher similarities come first.
         """
 
         def _max_ratio(kw, entry):
@@ -129,11 +133,16 @@ class Controller:
     def get_entries_sorted(self, target, reverse=False):
         """Get a tuple containing all the entries, sorted.
 
-        target defines which word from the pair(w, t) should be used for
-        sorting. target can be WORD or TRANS (constants: 0, 1).
+        target defines which word from the two "sides"("w" and "t" from
+        the entries dicts) should be used for sorting. target can be
+        WORD or TRANS (constants from this module).
 
         The default order is alphabetical. Reverse simply reverts the
         alphabetical order.
         """
-        return tuple(sorted(self._dictionary, key=lambda x: x[target],
+
+        compare = lambda a, b: locale.strcoll(a[target], b[target])
+
+        return tuple(sorted(self._dictionary,
+                            key=functools.cmp_to_key(compare),
                             reverse=reverse))
