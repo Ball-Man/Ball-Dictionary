@@ -29,7 +29,7 @@ WIN_GEOMETRY = '500x600'
 SEARCH_THRESHOLD = 0.6
 
 # Current app version
-VERSION = 0.1
+VERSION = 0.2
 
 
 def _abspath(path):
@@ -137,6 +137,10 @@ class App:
                                       var=self._ontop,
                                       command=self._toggle_ontop)
         self._chk_ontop.pack(anchor=W)
+
+        # Setup version label
+        lbl_version = Label(self._tab_options, text=f'Version {VERSION}')
+        lbl_version.pack(side=BOTTOM, anchor=W)
 
         # Event bindings
         self._btn_search.bind('<Button-1>', self._search)
