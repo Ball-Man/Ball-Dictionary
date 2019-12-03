@@ -128,10 +128,10 @@ class Controller:
         # Go back to the canonical entry format
         entries = map(lambda x: x[1], sorted_ratios)
 
-        return tuple(entries)
+        return list(entries)
 
     def get_entries_sorted(self, target, reverse=False):
-        """Get a tuple containing all the entries, sorted.
+        """Get a list containing all the entries, sorted.
 
         target defines which word from the two "sides"("w" and "t" from
         the entries dicts) should be used for sorting. target can be
@@ -143,6 +143,6 @@ class Controller:
 
         compare = lambda a, b: locale.strcoll(a[target], b[target])
 
-        return tuple(sorted(self._dictionary,
-                            key=functools.cmp_to_key(compare),
-                            reverse=reverse))
+        return list(sorted(self._dictionary,
+                           key=functools.cmp_to_key(compare),
+                           reverse=reverse))
