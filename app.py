@@ -127,8 +127,13 @@ class App:
         self._btn_insert.pack(anchor=W, pady=(5, 0))
 
         # Setup options frame
+        # Setup window subframe
+        frame_window = Labelframe(self._tab_options, text='Window',
+                                  padding=5)
+        frame_window.pack(anchor=W, fill=X)
+
         self._ontop = IntVar()  # Associated to _chk_ontop
-        self._chk_ontop = Checkbutton(self._tab_options, text='Always on top',
+        self._chk_ontop = Checkbutton(frame_window, text='Always on top',
                                       var=self._ontop,
                                       command=self._toggle_ontop)
         self._chk_ontop.pack(anchor=W)
