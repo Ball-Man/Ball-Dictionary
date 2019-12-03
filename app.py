@@ -84,9 +84,18 @@ class App:
         self._entry_search.pack(side=LEFT)
         self._btn_search.pack(side=LEFT, padx=(10, 0))
 
-        self._lst_search = Listbox(self._tab_search, borderwidth=0,
-                                   highlightthickness=0)
-        self._lst_search.pack(fill=BOTH, expand=True)
+        # Setup listbox with scrollbar
+        frame_scrollbar = Frame(self._tab_search)
+        frame_scrollbar.pack(fill=BOTH, expand=True)
+
+        scroll_search = Scrollbar(frame_scrollbar, orient=VERTICAL)
+        self._lst_search = Listbox(frame_scrollbar, borderwidth=0,
+                                   highlightthickness=0,
+                                   yscrollcommand=scroll_search.set)
+        scroll_search.config(command=self._lst_search.yview)
+
+        scroll_search.pack(side=RIGHT, fill=Y)
+        self._lst_search.pack(side=LEFT, fill=BOTH, expand=True)
 
         # Setup insert frame
         frame_lang1 = Frame(self._tab_insert)
