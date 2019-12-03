@@ -28,6 +28,9 @@ WIN_GEOMETRY = '500x600'
 # Default search threshold
 SEARCH_THRESHOLD = 0.6
 
+# Current app version
+VERSION = 0.1
+
 
 def _abspath(path):
     """Compute an absolute path.
