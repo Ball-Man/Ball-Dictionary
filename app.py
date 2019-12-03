@@ -73,9 +73,11 @@ class App:
         # Tabs
         self._tab_search = Frame(self._notebook, padding=10)
         self._tab_insert = Frame(self._notebook, padding=10)
+        self._tab_options = Frame(self._notebook, padding=10)
 
         self._notebook.add(self._tab_search, text='search')
         self._notebook.add(self._tab_insert, text='insert')
+        self._notebook.add(self._tab_options, text='options')
 
         # Setup search frame
         frame_search = Labelframe(self._tab_search, text='Search', padding=5)
@@ -123,6 +125,13 @@ class App:
 
         self._btn_insert = Button(self._tab_insert, text='Add')
         self._btn_insert.pack(anchor=W, pady=(5, 0))
+
+        # Setup options frame
+        self._ontop = IntVar()  # Associated to _chk_ontop
+        self._chk_ontop = Checkbutton(self._tab_options, text='Always on top',
+                                      var=self._ontop,
+                                      command=self._toggle_ontop)
+        self._chk_ontop.pack(anchor=W)
 
         # Event bindings
         self._btn_search.bind('<Button-1>', self._search)
@@ -238,3 +247,7 @@ class App:
             self._controller.save()
         except Exception as e:
             messagebox.showerror('Error while saving', str(e))
+
+    def _toggle_ontop(self, event=None):
+        """Event for the always on top checkbutton."""
+        self._window.wm_attributes('-topmost', self._ontop.get())
