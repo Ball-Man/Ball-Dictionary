@@ -13,6 +13,7 @@ CONFIG_FILE = 'config.json'
 CONFIG_WORD_LANG_KEY = 'word_lang'
 CONFIG_TRANS_LANG_KEY = 'trans_lang'
 CONFIG_LOCALE_KEY = 'locale'
+DEFAULT_LOCALE = 'eng'
 
 # Dictionary default path(json file, relative to this file)
 DICTIONARY_PATH = 'dict/dictionary.json'
@@ -75,7 +76,7 @@ class App:
 
         # Setup search frame
         frame_search = Labelframe(self._tab_search, text='Search', padding=5)
-        frame_search.pack(fill=X)
+        frame_search.pack(fill=X, pady=(0, 10))
 
         self._entry_search = Entry(frame_search)
         lbl_keyword = Label(frame_search, text='keyword: ')
@@ -140,7 +141,7 @@ class App:
         try:
             self._controller = controller.Controller(
                 _abspath(DICTIONARY_PATH),
-                self._config_dict[CONFIG_LOCALE_KEY])
+                self._config_dict.get(CONFIG_LOCALE_KEY, DEFAULT_LOCALE))
         except Exception as e:
             messagebox.showerror('Error loading dictionary :(', str(e))
             self._window.destroy()
@@ -201,7 +202,10 @@ class App:
             self._search_results[selection][controller.WORD])
         del self._search_results[selection]
 
-        self._controller.save()
+        try:
+            self._controller.save()
+        except Exception as e:
+            messagebox.showerror('Error while saving', str(e))
 
     def _insert(self, event=None):
         """Event for the insert button."""
@@ -227,4 +231,7 @@ class App:
                                 + 'dictionary.')
             return
 
-        self._controller.save()
+        try:
+            self._controller.save()
+        except Exception as e:
+            messagebox.showerror('Error while saving', str(e))
