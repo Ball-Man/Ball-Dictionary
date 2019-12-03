@@ -126,6 +126,9 @@ class App:
         self._btn_search.bind('<Return>', self._search)
 
         self._btn_showall.bind('<Button-1>', self._showall)
+        self._btn_showall.bind('<Return>', self._showall)
+
+        self._lst_search.bind('<Delete>', self._delete_selection)
 
         self._btn_insert.bind('<Button-1>', self._insert)
         self._entry_trans.bind('<Return>', self._insert)
@@ -141,6 +144,13 @@ class App:
         except Exception as e:
             messagebox.showerror('Error loading dictionary :(', str(e))
             self._window.destroy()
+            return
+
+        # Cached search results
+        self._search_results = None
+
+        # Start the app with the list of all entries
+        self._showall()
 
     def start(self):
         """Start the application's main loop."""
@@ -159,9 +169,15 @@ class App:
 
     def _search(self, event=None):
         """Event for the search button."""
-        result = self._controller.search_entries(
+        self._search_results = self._controller.search_entries(
             keyword=self._entry_search.get(), threshold=SEARCH_THRESHOLD)
-        self._show_entries(result)
+        self._show_entries(self._search_results)
+
+    def _showall(self, event=None):
+        """Event for the showall button."""
+        self._search_results = self._controller.get_entries_sorted(
+            controller.WORD)
+        self._show_entries(self._search_results)
 
     def _show_entries(self, entries):
         """Updates the listbox with the given list of entries."""
@@ -171,6 +187,21 @@ class App:
         for entry in entries:
             self._lst_search.insert(END, f'{entry[controller.WORD]}: '
                                     + f'{entry[controller.TRANS]}')
+
+    def _delete_selection(self, event=None):
+        """Event for the deletion of an entry(DEL key pressed)."""
+        if (not self._lst_search.curselection()):
+            return
+
+        selection = self._lst_search.curselection()[0]
+
+        # Remove from: listbox, controller, cached results
+        self._lst_search.delete(selection)
+        self._controller.remove_entry(
+            self._search_results[selection][controller.WORD])
+        del self._search_results[selection]
+
+        self._controller.save()
 
     def _insert(self, event=None):
         """Event for the insert button."""
@@ -197,8 +228,3 @@ class App:
             return
 
         self._controller.save()
-
-    def _showall(self, event=None):
-        """Event for the showall button."""
-        result = self._controller.get_entries_sorted(controller.WORD)
-        self._show_entries(result)
