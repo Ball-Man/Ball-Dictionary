@@ -29,7 +29,7 @@ WIN_GEOMETRY = '500x600'
 SEARCH_THRESHOLD = 0.6
 
 # Current app version
-VERSION = 0.2
+VERSION = 0.3
 
 
 def _abspath(path):
@@ -191,6 +191,11 @@ class App:
 
     def _search(self, event=None):
         """Event for the search button."""
+        keyword = self._entry_search.get().strip()
+        if len(keyword) == 0:
+            self._showall()
+            return
+
         self._search_results = self._controller.search_entries(
             keyword=self._entry_search.get(), threshold=SEARCH_THRESHOLD)
         self._show_entries(self._search_results)
